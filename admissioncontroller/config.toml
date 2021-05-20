@@ -1,0 +1,11 @@
+
+[severity]
+level = "low"
+[rules]
+skip-rules = [
+    "AC-K8-CA-PO-H-0165"
+]
+[k8s-admission-control]
+#dashboard = true
+denied-severity = "low"
+log-level = "debug"

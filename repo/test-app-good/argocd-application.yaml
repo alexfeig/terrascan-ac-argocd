@@ -1,0 +1,14 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: test-app-good
+  namespace: argocd
+spec:
+  destination:
+    namespace: app
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: test-app-good
+    repoURL: https://github.com/alexfeig/accurics-kubernetes-demo.git
+    targetRevision: HEAD

@@ -1,0 +1,33 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: accurics-validatingwebhookconfiguration
+webhooks:
+  - name: "ac.accurics.svc"
+    failurePolicy: Fail
+    clientConfig:
+      service:
+        namespace: accurics
+        name: ac
+        path: /v1/k8s/webhooks/1234/scan/validate
+      caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURUVENDQWpXZ0F3SUJBZ0lVYnlNWGRTMW5zQWcwb0cwZ09XNVpzWGtwMndvd0RRWUpLb1pJaHZjTkFRRUwKQlFBd0tERW1NQ1FHQTFVRUF3d2RZV011WVdOamRYSnBZM011YzNaakxtTnNkWE4wWlhJdWJHOWpZV3d3SGhjTgpNakV3TlRJd01ERXhOelF6V2hjTk16RXdOVEU0TURFeE56UXpXakFvTVNZd0pBWURWUVFEREIxaFl5NWhZMk4xCmNtbGpjeTV6ZG1NdVkyeDFjM1JsY2k1c2IyTmhiRENDQVNJd0RRWUpLb1pJaHZjTkFRRUJCUUFEZ2dFUEFEQ0MKQVFvQ2dnRUJBTkNTZmFGMVVzNEFuem90T3NVdlVKOG5wb1NtMVRxVDNWVjZ0VUJ0MFhlbkhxQjBZVW1sMmVWNwpPLzNoTXQrRGxtTkhvaDJ5NkhwM1JxTkpBa0UzT0dzbVM5dzgxZTBCZFY3MlprWjltMkRwMXhoK0JwWDF5V2w3CnBkMTNlY3pCNE9EQmhOUUtNSVFoeUpqcEltbEw1ZEQrSW16UUpHajVUUk5jN0pVMG5OcloxR2VYWHhpTDFnUzIKUmRNeEZhRkRLUGdaZm9XaVNPZ2VtckpNNzh3T0liYXRRVUFGd2hNdzRXQURUTzVNOXc2UEMvSjFYZzFwSFdwbwpnQ1ZFbEpVZ2RSL2ZaWFlOYkhIOXNXc2lKc0NrLzZMSFBFRG5Udjd4TnVKbXVhY29pUVZ5NkhxaXArYURiUEVTClpSOWlESlVLRTVFUHBySVgvUHlTK1RrSjN0L0dNQzBDQXdFQUFhTnZNRzB3SFFZRFZSME9CQllFRk5oUXFTMHQKUTlCVzQvZEpINUhMMjNBUnM2YXNNQjhHQTFVZEl3UVlNQmFBRk5oUXFTMHRROUJXNC9kSkg1SEwyM0FSczZhcwpNQThHQTFVZEV3RUIvd1FGTUFNQkFmOHdHZ1lEVlIwUkJCTXdFWUlQWVdNdVlXTmpkWEpwWTNNdWMzWmpNQTBHCkNTcUdTSWIzRFFFQkN3VUFBNElCQVFCK0V4SFB5bEV3TzhEMVdsSDJIWmYyd3lKa0cxMVpvRTV1aUpCR080Q3oKR2YvUWRnTVZFQUxCcThDa09yeVpZWGJ0WENGNEgyNXN0cmRNd1hhMmFjSXU2dmNPcEdvL0VkWlVyUklnZTBScgpFWmNPOUVFMDR4NDBzNmNWeDlFRGVNaGx6VnZvWlFsMUt5OVJCRkpnT2lBRFhqMHhwckZwZTlRMkpHOEhPWTdUCkE1emVGbUR5aFRmUDl1eDlFUXl6TjFFVExDVDZKMXp5TFkzNGQzNU9YWitEckVKaXBWUGlrNXhIZjNuMVd1NlAKbnFNbk9aR1ZGanFMMGxtZldCTGozY0ZiMGR4RnhxRGN1OHRXUUxEZFN0QWpJZlNPVjBJbklwb0VEbmMvWkpJRQo3NGJidEZIdmM1RDJJZ3gwTWJoMDRHN21hY0s4RDYvUTdMZENCSDhYanJDSgotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+    admissionReviewVersions: ["v1", "v1beta1"]
+    sideEffects: None
+    timeoutSeconds: 5
+    namespaceSelector:
+      matchExpressions:
+      - key: environment
+        operator: In
+        values: ["prod"]
+    rules:
+    - apiGroups:
+      - apps
+      - ""
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - deployments
+      - pods

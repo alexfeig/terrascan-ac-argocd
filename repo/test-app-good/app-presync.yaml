@@ -1,0 +1,64 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: terrascan-hook-
+  annotations:
+    argocd.argoproj.io/hook: PreSync   
+spec:
+  ttlSecondsAfterFinished: 60
+  template:
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: terrascan-argocd
+        image: terrascan-argocd:latest
+        imagePullPolicy: Never
+        resources:
+          requests:
+            cpu: "1"
+            memory: "256Mi"
+          limits:
+            cpu: "1"
+            memory: "256Mi"
+        env:
+          - name: SERVICE_NAME
+            value: ac.accurics.svc
+          - name: REMOTE_URL
+            value: https://github.com/alexfeig/accurics-kubernetes-demo.git//test-app-good
+          - name: IAC_TYPE
+            value: k8s
+          - name: IAC_VERSION
+            value: v1
+          - name: CLOUD_PROVIDER
+            value: all
+          - name: REMOTE_TYPE
+            value: git      
+        args:
+        - sh
+        - /home/terrascan/bin/terrascan-remote-scan.sh
+        securityContext:
+          seccompProfile:
+            type: RuntimeDefault
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 101
+        livenessProbe:
+          exec:
+            command:
+            - cat
+            - /home/terrascan/bin/terrascan-remote-scan.sh
+          periodSeconds: 10
+          initialDelaySeconds: 10
+        readinessProbe:
+          exec:
+            command:
+            - cat
+            - /home/terrascan/bin/terrascan-remote-scan.sh
+          periodSeconds: 10
+          initialDelaySeconds: 10
+      restartPolicy: Never
+  backoffLimit: 1

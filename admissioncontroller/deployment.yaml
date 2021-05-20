@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: terrascan-server
+  namespace: accurics
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: terrascan
+  template:
+    metadata:
+      labels:
+        app: terrascan
+    spec:
+      containers:
+      - name: terrascan
+        image: accurics/terrascan:9db3868
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "1"
+        ports:
+          - containerPort: 443
+        livenessProbe:
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          httpGet:
+            path: /health
+            port: 443
+            scheme: HTTPS
+        env:
+          - name: K8S_WEBHOOK_API_KEY
+            value: '1234'
+        volumeMounts:
+          - mountPath: /data/certs
+            name: terrascan-certs-secret  
+            readOnly: true
+          - mountPath: /data/config
+            name: terrascan-config
+            readOnly: true
+        command: ["/bin/sh", "-c"]
+        args:
+          - >
+            terrascan server --cert-path /data/certs/certificate.pem --key-path /data/certs/key.pem -p 443 -l debug -c /data/config/config.toml
+      volumes:
+        - name: terrascan-config
+          configMap:
+            name: terrascan-config 
+        - name: terrascan-certs-secret
+          secret:
+            secretName: terrascan-certs-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ac
+  namespace: accurics
+spec:
+  ports:
+  - name: https
+    port: 443
+    targetPort: 443
+    protocol: TCP
+  selector:
+    app: terrascan

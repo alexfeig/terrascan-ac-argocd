@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: green-good
+  namespace: app
+spec:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+  - name: green
+    image: alexfeig/bluegreen
+    ports:
+      - containerPort: 5000
+    readinessProbe:
+      tcpSocket:
+        port: 5000
+      initialDelaySeconds: 5
+      periodSeconds: 10
+    livenessProbe:
+      tcpSocket:
+        port: 5000
+      initialDelaySeconds: 15
+      periodSeconds: 20
+    env:
+      - name: app_color
+        value: "green"
+    securityContext:
+      readOnlyRootFilesystem: true
+      allowPrivilegeEscalation: false
+      runAsNonRoot: true
+      runAsUser: 1000
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "250m"
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
