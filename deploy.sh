@@ -28,6 +28,7 @@ kubectl apply -f admissioncontroller/secret.yaml
 kubectl apply -f admissioncontroller/configmap.yaml
 kubectl apply -f admissioncontroller/deployment.yaml
 sed -i -e "s/caBundle.*$/caBundle: $(base64 admissioncontroller/\keys\/certificate.pem)/g" admissioncontroller/validatingwebhook.yaml
+kubectl apply -f admissioncontroller/validatingwebhook.yaml
 echo "\x1B[92m--- Waiting for 30 seconds for ArgoCD to initialize to get login information\x1B[0m"
 sleep 30
 argo_password=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
